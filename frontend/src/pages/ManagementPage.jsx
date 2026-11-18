@@ -18,6 +18,7 @@ import api, { getApiData, getApiError } from "../api/client.js";
 import { uploadImage } from "../api/imagekit.js";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useToast } from "../context/ToastContext.jsx";
+import WarehouseHero from "../components/WarehouseHero.jsx";
 import {
   EmptyState,
   ErrorState,
@@ -242,6 +243,15 @@ export default function ManagementPage({ resource }) {
         </div>
         {canEdit && settings.createLabel && <button className="btn-primary" onClick={() => setDialog({ mode: "form" })}><Plus className="h-4 w-4" />{settings.createLabel}</button>}
       </div>
+
+      {resource === "warehouses" && (
+        <WarehouseHero
+          compact
+          eyebrow="Warehouse network"
+          title="Locations, stock and teams in one view"
+          description="Review warehouse records and manager assignments across your operation."
+        />
+      )}
 
       <div className="panel overflow-hidden">
         <div className="flex flex-col justify-between gap-3 border-b border-slate-100 p-4 sm:flex-row sm:items-center sm:px-5">

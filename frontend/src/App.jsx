@@ -9,10 +9,17 @@ import OrdersPage from "./pages/OrdersPage.jsx";
 import StockPage from "./pages/StockPage.jsx";
 import SupplierPage from "./pages/SupplierPage.jsx";
 import AccessDenied from "./pages/AccessDenied.jsx";
+import {
+  AboutPage,
+  ContactPage,
+  FeaturesPage,
+  PublicHomePage,
+  PublicSiteLayout
+} from "./pages/PublicSite.jsx";
 
 function RoleRedirect() {
   const { user } = useAuth();
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) return <Navigate to="/" replace />;
   return <Navigate to="/overview" replace />;
 }
 
@@ -30,12 +37,17 @@ function OrdersRoute() {
 export default function App() {
   return (
     <Routes>
+      <Route element={<PublicSiteLayout />}>
+        <Route index element={<PublicHomePage />} />
+        <Route path="about" element={<AboutPage />} />
+        <Route path="features" element={<FeaturesPage />} />
+        <Route path="contact" element={<ContactPage />} />
+      </Route>
       <Route path="/login" element={<AuthPage mode="login" />} />
       <Route path="/register" element={<AuthPage mode="register" />} />
       <Route element={<ProtectedRoute />}>
         <Route path="/access-denied" element={<AccessDenied />} />
         <Route element={<AppShell />}>
-          <Route index element={<RoleRedirect />} />
           <Route path="overview" element={<DashboardHome />} />
           <Route path="users" element={<Restricted roles={["admin"]}><ManagementPage resource="users" /></Restricted>} />
           <Route path="products" element={<Restricted roles={["admin"]}><ManagementPage resource="products" /></Restricted>} />

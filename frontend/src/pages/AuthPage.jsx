@@ -36,19 +36,19 @@ export default function AuthPage({ mode }) {
 
   return (
     <div className="min-h-screen bg-white lg:grid lg:grid-cols-[1.05fr_0.95fr]">
-      <div className="relative hidden overflow-hidden bg-navy-900 px-12 py-12 text-white lg:flex lg:flex-col lg:justify-between xl:px-20">
-        <div className="absolute -right-36 -top-32 h-[440px] w-[440px] rounded-full border border-white/10" />
-        <div className="absolute -right-20 -top-16 h-[300px] w-[300px] rounded-full border border-white/10" />
-        <div className="relative flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-navy-900"><Boxes className="h-6 w-6" /></div>
+      <div className="relative hidden min-h-screen overflow-hidden bg-navy-900 px-12 py-12 text-white lg:flex lg:flex-col lg:justify-between xl:px-20">
+        <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1600&q=85" alt="" className="absolute inset-0 h-full w-full object-cover opacity-50" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0b1117]/95 via-[#0b1117]/75 to-[#0b1117]/45" />
+        <Link to="/" className="relative flex items-center gap-3">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#f47e25] text-[#17130f]"><Boxes className="h-6 w-6" /></div>
           <span className="text-sm font-bold tracking-[0.16em]">STOCKROOM</span>
-        </div>
+        </Link>
         <div className="relative max-w-xl">
-          <p className="mb-5 text-xs font-bold uppercase tracking-[0.2em] text-blue-200">Inventory clarity, at every step</p>
+          <p className="mb-5 text-xs font-bold uppercase tracking-[0.2em] text-[#ff984e]">WAREHOUSE OPERATIONS · INVENTORY CONTROL</p>
           <h1 className="text-5xl font-bold leading-[1.1] tracking-tight xl:text-6xl">One workspace for your entire operation.</h1>
           <p className="mt-6 max-w-lg text-lg leading-8 text-slate-300">Coordinate stock, warehouses, orders and suppliers with a clear view of what moves next.</p>
           <div className="mt-10 flex items-center gap-3 text-sm text-slate-300">
-            <span className="h-2 w-2 rounded-full bg-emerald-400" />
+            <span className="h-2 w-2 rounded-full bg-[#f47e25]" />
             Secure access for every team
           </div>
         </div>
@@ -57,10 +57,10 @@ export default function AuthPage({ mode }) {
 
       <div className="flex min-h-screen items-center justify-center px-5 py-10 sm:px-10">
         <div className="w-full max-w-[420px]">
-          <div className="mb-9 flex items-center gap-3 lg:hidden">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-navy-900 text-white"><Boxes className="h-5 w-5" /></div>
+          <Link to="/" className="mb-9 flex items-center gap-3 lg:hidden">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#f47e25] text-[#17130f]"><Boxes className="h-5 w-5" /></div>
             <span className="text-sm font-bold tracking-[0.16em] text-navy-900">STOCKROOM</span>
-          </div>
+          </Link>
           <div>
             <p className="text-sm font-semibold text-navy-600">{isRegister ? "Create your account" : "Welcome back"}</p>
             <h2 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">{isRegister ? "Get started" : "Sign in to Stockroom"}</h2>

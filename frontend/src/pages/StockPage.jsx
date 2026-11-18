@@ -3,6 +3,7 @@ import { ArrowDownToLine, ArrowUpFromLine, Boxes, Package, Search, Warehouse } f
 import api, { getApiData, getApiError } from "../api/client.js";
 import { useToast } from "../context/ToastContext.jsx";
 import { EmptyState, ErrorState, Field, Modal, PageLoading, SearchInput } from "../components/ui.jsx";
+import WarehouseHero from "../components/WarehouseHero.jsx";
 
 export default function StockPage() {
   const notify = useToast();
@@ -92,17 +93,17 @@ export default function StockPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-        <div>
-          <div className="mb-2 flex items-center gap-2 text-navy-600"><Boxes className="h-4 w-4" /><span className="text-xs font-bold uppercase tracking-[0.14em]">Warehouse operations</span></div>
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900">Warehouse inventory</h2>
-          <p className="mt-1.5 text-sm text-slate-500">Receive and dispatch stock for your assigned locations.</p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <button className="btn-secondary" onClick={() => setDialog({ type: "out" })} disabled={!warehouseId}><ArrowUpFromLine className="h-4 w-4" /> Stock out</button>
-          <button className="btn-primary" onClick={() => setDialog({ type: "in" })} disabled={!warehouseId}><ArrowDownToLine className="h-4 w-4" /> Stock in</button>
-        </div>
-      </div>
+      <WarehouseHero
+        eyebrow="Warehouse operations"
+        title="Warehouse inventory"
+        description="Receive and dispatch stock for your assigned locations. Every adjustment is recorded in the transaction history."
+        actions={
+          <div className="mt-5 flex flex-wrap gap-2">
+            <button className="btn-secondary border-white/20 bg-black/20 text-white hover:bg-black/35" onClick={() => setDialog({ type: "out" })} disabled={!warehouseId}><ArrowUpFromLine className="h-4 w-4" /> Stock out</button>
+            <button className="btn-primary" onClick={() => setDialog({ type: "in" })} disabled={!warehouseId}><ArrowDownToLine className="h-4 w-4" /> Stock in</button>
+          </div>
+        }
+      />
 
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="panel flex items-center gap-4 p-5"><div className="rounded-xl bg-navy-50 p-3 text-navy-700"><Warehouse className="h-5 w-5" /></div><div><p className="text-xs font-medium text-slate-500">Assigned locations</p><p className="mt-1 text-2xl font-bold text-slate-900">{warehouses.length}</p></div></div>

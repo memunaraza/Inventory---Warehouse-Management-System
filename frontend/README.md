@@ -16,3 +16,7 @@ The browser uses the backend's HTTP-only authentication cookie (`withCredentials
 - `src/pages/`: login/registration, role-based overview, catalog/order workspace, warehouse inventory, supplier portal, and admin/manager data pages.
 
 The API client expects the backend response envelope `{ success, data, message }`. Role permissions remain enforced by the backend; the frontend route checks only control navigation and presentation.
+
+## Industrial interface
+
+The dark navy, charcoal, and safety-orange theme is defined in `src/styles.css` and used across the existing pages. Public visitors start at `/`, with About, Features, and Contact pages available before sign-in. `src/components/WarehouseHero.jsx` supplies warehouse photography for the dashboard and warehouse overview. The current API does not expose storage capacity limits, so warehouse bars compare live stock volume between locations rather than presenting a capacity percentage.
