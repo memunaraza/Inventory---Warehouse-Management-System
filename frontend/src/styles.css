@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+@theme {
+  --color-navy-50: #eff5fc;
+  --color-navy-100: #dce9f7;
+  --color-navy-500: #315f9d;
+  --color-navy-600: #244b82;
+  --color-navy-700: #1d3d6c;
+  --color-navy-800: #172f52;
+  --color-navy-900: #11233d;
+  --shadow-panel: 0 6px 24px rgba(20, 45, 80, 0.06);
+}
+
+:root {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #172033;
+  background: #f4f6fa;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; min-height: 100vh; }
+button, input, select, textarea { font: inherit; }
+button:disabled { cursor: not-allowed; opacity: 0.6; }
+
+@layer components {
+  .field {
+    @apply block w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-navy-500 focus:ring-4 focus:ring-navy-100;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-navy-800 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-navy-700 focus:outline-none focus:ring-4 focus:ring-navy-100 disabled:cursor-not-allowed disabled:opacity-60;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-slate-100;
+  }
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-red-200 bg-white px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-50;
+  }
+  .panel { @apply rounded-2xl border border-slate-200/80 bg-white shadow-panel; }
+  .table-head { @apply bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500; }
+  .table-cell { @apply border-t border-slate-100 px-4 py-3.5 align-middle text-sm text-slate-700; }
+}
