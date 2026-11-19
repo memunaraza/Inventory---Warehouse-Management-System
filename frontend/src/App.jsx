@@ -6,6 +6,7 @@ import AuthPage from "./pages/AuthPage.jsx";
 import DashboardHome from "./pages/DashboardHome.jsx";
 import ManagementPage from "./pages/ManagementPage.jsx";
 import OrdersPage from "./pages/OrdersPage.jsx";
+import ProfilePage from "./pages/ProfilePage.jsx";
 import StockPage from "./pages/StockPage.jsx";
 import SupplierPage from "./pages/SupplierPage.jsx";
 import AccessDenied from "./pages/AccessDenied.jsx";
@@ -49,6 +50,7 @@ export default function App() {
         <Route path="/access-denied" element={<AccessDenied />} />
         <Route element={<AppShell />}>
           <Route path="overview" element={<DashboardHome />} />
+          <Route path="profile" element={<ProfilePage />} />
           <Route path="users" element={<Restricted roles={["admin"]}><ManagementPage resource="users" /></Restricted>} />
           <Route path="products" element={<Restricted roles={["admin"]}><ManagementPage resource="products" /></Restricted>} />
           <Route path="warehouses" element={<Restricted roles={["admin", "warehouse_manager", "supplier", "sales_representative"]}><ManagementPage resource="warehouses" /></Restricted>} />
@@ -60,7 +62,9 @@ export default function App() {
           <Route path="catalog" element={<Restricted roles={["sales_representative"]}><OrdersPage mode="catalog" /></Restricted>} />
           <Route path="orders" element={<Restricted roles={["admin", "warehouse_manager", "sales_representative"]}><OrdersRoute /></Restricted>} />
           <Route path="supplier" element={<Restricted roles={["supplier"]}><SupplierPage /></Restricted>} />
-          <Route path="supplier/requests" element={<Restricted roles={["supplier"]}><SupplierPage initialTab="requests" /></Restricted>} />
+          <Route path="supplier/products" element={<Restricted roles={["supplier"]}><SupplierPage /></Restricted>} />
+          <Route path="supplier/new-request" element={<Restricted roles={["supplier"]}><SupplierPage /></Restricted>} />
+          <Route path="supplier/requests" element={<Restricted roles={["supplier"]}><SupplierPage /></Restricted>} />
         </Route>
       </Route>
       <Route path="*" element={<RoleRedirect />} />

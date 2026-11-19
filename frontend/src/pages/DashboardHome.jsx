@@ -266,7 +266,7 @@ function SupplierOverview({ data, user }) {
         <RequestList requests={data.requests.slice(0, 6)} />
       </section>
       <section className="panel overflow-hidden xl:col-span-2">
-        <PanelTitle title="Products linked to your account" subtitle="Your administrator manages catalog listings" icon={Package} actionTo="/supplier" actionLabel="My products" />
+        <PanelTitle title="Products linked to your account" subtitle="Your administrator manages catalog listings" icon={Package} actionTo="/supplier/products" actionLabel="My products" />
         <div className="overflow-x-auto">
           <table className="w-full min-w-[560px]">
             <thead><tr><th className="table-head px-5 py-3">Product</th><th className="table-head px-4 py-3">SKU</th><th className="table-head px-4 py-3">Category</th><th className="table-head px-5 py-3">Price</th></tr></thead>

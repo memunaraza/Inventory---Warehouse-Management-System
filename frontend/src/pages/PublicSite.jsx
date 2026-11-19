@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { Link, NavLink, Outlet } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
+import BrandLogo from "../components/BrandLogo.jsx";
 
 const imageUrl = "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=2000&q=85";
 
@@ -43,13 +44,15 @@ export function PublicSiteLayout() {
   return (
     <div className="public-site">
       <header className="public-nav sticky top-0 z-40 border-b border-white/10 bg-[#0b1117]/95 backdrop-blur">
+        <div className="public-utility border-b border-white/10">
+          <div className="mx-auto flex h-8 max-w-[1360px] items-center justify-between px-4 sm:px-7">
+            <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-slate-400">Inventory <span className="mx-1.5 text-[#f47e25]">/</span> Warehouse <span className="mx-1.5 text-[#f47e25]">/</span> Fulfillment</p>
+            <p className="hidden text-[10px] font-medium text-slate-500 sm:block">A clearer view of your operation</p>
+          </div>
+        </div>
         <div className="mx-auto flex h-[72px] max-w-[1360px] items-center justify-between gap-4 px-4 sm:px-7">
           <Link to="/" className="flex shrink-0 items-center gap-3" onClick={() => setMenuOpen(false)}>
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#f47e25] text-[#17130f]"><Boxes className="h-5 w-5" strokeWidth={2.5} /></span>
-            <span>
-              <span className="block text-xs font-extrabold tracking-[0.16em] text-white">STOCKROOM</span>
-              <span className="mt-0.5 block text-[9px] font-semibold uppercase tracking-[0.14em] text-slate-400">Warehouse operations</span>
-            </span>
+            <BrandLogo descriptor />
           </Link>
 
           <nav className="hidden items-center gap-1 md:flex" aria-label="Main navigation">
@@ -58,7 +61,10 @@ export function PublicSiteLayout() {
 
           <div className="hidden items-center gap-2 sm:flex">
             {user ? (
-              <Link to="/overview" className="btn-primary">Open dashboard <ArrowUpRight className="h-4 w-4" /></Link>
+              <>
+                <Link to="/profile" className="btn-secondary">My Profile</Link>
+                <Link to="/overview" className="btn-primary">Open dashboard <ArrowUpRight className="h-4 w-4" /></Link>
+              </>
             ) : (
               <>
                 <Link to="/login" className="btn-secondary">Sign in</Link>
@@ -76,7 +82,10 @@ export function PublicSiteLayout() {
           <nav className="mx-auto flex max-w-[1360px] flex-col gap-1" aria-label="Mobile navigation">
             {navItems.map((item) => <NavLink key={item.to} to={item.to} end={item.to === "/"} onClick={() => setMenuOpen(false)} className={({ isActive }) => `rounded-lg px-3 py-3 text-sm font-semibold ${isActive ? "bg-[#f47e25]/10 text-[#ff9345]" : "text-slate-300 hover:bg-white/5"}`}>{item.label}</NavLink>)}
             <div className="mt-2 grid grid-cols-2 gap-2 border-t border-white/10 pt-4">
-              {user ? <Link to="/overview" className="btn-primary col-span-2" onClick={() => setMenuOpen(false)}>Open dashboard <ArrowUpRight className="h-4 w-4" /></Link> : <>
+              {user ? <>
+                <Link to="/profile" className="btn-secondary" onClick={() => setMenuOpen(false)}>My Profile</Link>
+                <Link to="/overview" className="btn-primary" onClick={() => setMenuOpen(false)}>Open dashboard <ArrowUpRight className="h-4 w-4" /></Link>
+              </> : <>
                 <Link to="/login" className="btn-secondary" onClick={() => setMenuOpen(false)}>Sign in</Link>
                 <Link to="/register" className="btn-primary" onClick={() => setMenuOpen(false)}>Get started</Link>
               </>}
@@ -91,8 +100,7 @@ export function PublicSiteLayout() {
         <div className="mx-auto grid max-w-[1360px] gap-8 px-4 py-10 sm:px-7 md:grid-cols-[1.4fr_1fr_1fr]">
           <div>
             <Link to="/" className="inline-flex items-center gap-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#f47e25] text-[#17130f]"><Boxes className="h-4 w-4" /></span>
-              <span className="text-xs font-extrabold tracking-[0.16em] text-white">STOCKROOM</span>
+              <BrandLogo size={36} />
             </Link>
             <p className="mt-3 max-w-sm text-sm leading-6 text-slate-400">A practical workspace for warehouse inventory, order fulfillment, and supplier coordination.</p>
           </div>
@@ -127,12 +135,12 @@ export function PublicHomePage() {
             <div className="max-w-3xl">
               <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#f47e25]/35 bg-[#0b1117]/60 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#ff9a51] backdrop-blur">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#f47e25] shadow-[0_0_12px_rgba(244,126,37,0.9)]" />
-                Inventory · Warehousing · Fulfillment
+                Built for the flow of warehouse work
               </p>
-              <h1 className="text-4xl font-extrabold leading-[1.04] tracking-tight text-white sm:text-6xl lg:text-[4.7rem]">
-                Warehouse operations,<br className="hidden sm:block" /> <span className="text-[#ff9345]">under control.</span>
+              <h1 className="text-4xl font-extrabold uppercase leading-[1.02] tracking-tight text-white sm:text-6xl lg:text-[4.7rem]">
+                Move stock.<br className="hidden sm:block" /> <span className="text-[#ff9345]">Move forward.</span>
               </h1>
-              <p className="mt-6 max-w-2xl text-base leading-7 text-slate-200 sm:text-lg sm:leading-8">Keep stock visible by location, coordinate your team, and move orders from request to fulfillment in one connected workspace.</p>
+              <p className="mt-6 max-w-2xl text-base leading-7 text-slate-200 sm:text-lg sm:leading-8">Bring inventory, warehouse teams, suppliers, and orders into one clear operational picture—from receiving to dispatch.</p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link to="/register" className="btn-primary px-5 py-3">Get started <ArrowRight className="h-4 w-4" /></Link>
                 <Link to="/features" className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-white/25 bg-black/20 px-4 py-2.5 text-sm font-bold text-white backdrop-blur transition hover:border-white/40 hover:bg-black/35">Explore the platform <ArrowUpRight className="h-4 w-4" /></Link>
@@ -149,11 +157,11 @@ export function PublicHomePage() {
               <div className="relative rounded-2xl border border-white/15 bg-[#101820]/92 p-4 shadow-[0_30px_80px_rgba(0,0,0,0.45)] backdrop-blur-xl">
                 <div className="flex items-center justify-between border-b border-white/10 pb-3">
                   <div>
-                    <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-slate-500">Operations overview</p>
-                    <p className="mt-1 text-sm font-bold text-white">Today’s warehouse</p>
+                    <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-slate-500">Stockroom workspace</p>
+                    <p className="mt-1 text-sm font-bold text-white">Operations overview</p>
                   </div>
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-2.5 py-1 text-[10px] font-bold text-emerald-300">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Live
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-[#f47e25]/20 bg-[#f47e25]/10 px-2.5 py-1 text-[10px] font-bold text-[#ffb06f]">
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#f47e25]" /> Preview
                   </span>
                 </div>
                 <div className="grid grid-cols-3 gap-2 py-3">
@@ -163,8 +171,8 @@ export function PublicHomePage() {
                 </div>
                 <div className="rounded-xl border border-white/10 bg-[#0b1117]/70 p-3">
                   <div className="flex items-center justify-between">
-                    <p className="text-xs font-bold text-white">Recent activity</p>
-                    <p className="text-[9px] font-bold uppercase tracking-wider text-[#ff9345]">View all</p>
+                    <p className="text-xs font-bold text-white">Example activity</p>
+                    <p className="text-[9px] font-bold uppercase tracking-wider text-[#ff9345]">Workspace</p>
                   </div>
                   <div className="mt-3 space-y-2">
                     <div className="flex items-center gap-3 rounded-lg bg-white/[0.03] px-3 py-2.5"><span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-400/10"><Truck className="h-4 w-4 text-emerald-400" /></span><div className="min-w-0 flex-1"><p className="truncate text-xs font-bold text-slate-200">Dispatch completed</p><p className="mt-0.5 text-[10px] text-slate-500">Order #1048 · 12 items</p></div><span className="text-[10px] text-slate-500">2m</span></div>
@@ -177,10 +185,12 @@ export function PublicHomePage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1360px] px-4 py-16 sm:px-7 sm:py-20">
-        <SectionHeading eyebrow="One connected operation" title="From receiving to dispatch, keep every team in sync." description="Stockroom brings the everyday workflows of inventory, warehouse, supplier, and sales teams into one organized place." />
+      <section className="public-home-services">
+        <div className="mx-auto max-w-[1360px] px-4 py-16 sm:px-7 sm:py-20">
+        <SectionHeading eyebrow="One connected operation" title="A clear path from receiving to dispatch." description="Stockroom brings the everyday workflows of inventory, warehouse, supplier, and sales teams into one organized place." />
         <div className="mt-9 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {featureItems.map((feature) => <FeatureCard key={feature.title} {...feature} />)}
+        </div>
         </div>
       </section>
 

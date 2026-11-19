@@ -1,15 +1,29 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Building2, Camera, CheckCircle2, Package, Plus, Send, Trash2, Truck, UserRound } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
 import api, { getApiData, getApiError } from "../api/client.js";
 import { uploadImage } from "../api/imagekit.js";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useToast } from "../context/ToastContext.jsx";
 import { EmptyState, ErrorState, Field, PageLoading, StatusBadge } from "../components/ui.jsx";
 
-export default function SupplierPage({ initialTab = "profile" }) {
+const tabRoutes = {
+  profile: "/supplier",
+  products: "/supplier/products",
+  "new-request": "/supplier/new-request",
+  requests: "/supplier/requests"
+};
+
+function tabFromPath(pathname) {
+  return Object.entries(tabRoutes).find(([, path]) => path === pathname)?.[0] || "profile";
+}
+
+export default function SupplierPage() {
   const { user, refreshUser } = useAuth();
   const notify = useToast();
-  const [tab, setTab] = useState(initialTab);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [tab, setTab] = useState(() => tabFromPath(location.pathname));
   const [products, setProducts] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
   const [requests, setRequests] = useState([]);
@@ -24,6 +38,14 @@ export default function SupplierPage({ initialTab = "profile" }) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    setTab(tabFromPath(location.pathname));
+  }, [location.pathname]);
+
+  const selectTab = (nextTab) => {
+    navigate(tabRoutes[nextTab]);
+  };
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -99,7 +121,7 @@ export default function SupplierPage({ initialTab = "profile" }) {
       await api.post("/supply-requests", { items: requestItems });
       notify("Supply request submitted for review.");
       setItems([{ product: "", warehouse: warehouses[0]?._id || "", quantity: 1 }]);
-      setTab("requests");
+      navigate(tabRoutes.requests);
       await load();
     } catch (requestError) {
       notify(getApiError(requestError), "error");
@@ -120,10 +142,10 @@ export default function SupplierPage({ initialTab = "profile" }) {
       </div>
 
       <div className="flex flex-wrap gap-2 border-b border-slate-200">
-        <Tab active={tab === "profile"} onClick={() => setTab("profile")}>Supplier profile</Tab>
-        <Tab active={tab === "products"} onClick={() => setTab("products")}>My products <span className="ml-2 rounded-full bg-slate-100 px-2 py-0.5 text-[10px]">{products.length}</span></Tab>
-        <Tab active={tab === "new-request"} onClick={() => setTab("new-request")}>New supply request</Tab>
-        <Tab active={tab === "requests"} onClick={() => setTab("requests")}>Request history <span className="ml-2 rounded-full bg-slate-100 px-2 py-0.5 text-[10px]">{requests.length}</span></Tab>
+        <Tab active={tab === "profile"} onClick={() => selectTab("profile")}>Supplier profile</Tab>
+        <Tab active={tab === "products"} onClick={() => selectTab("products")}>My products <span className="ml-2 rounded-full bg-slate-100 px-2 py-0.5 text-[10px]">{products.length}</span></Tab>
+        <Tab active={tab === "new-request"} onClick={() => selectTab("new-request")}>New supply request</Tab>
+        <Tab active={tab === "requests"} onClick={() => selectTab("requests")}>Request history <span className="ml-2 rounded-full bg-slate-100 px-2 py-0.5 text-[10px]">{requests.length}</span></Tab>
       </div>
 
       {tab === "profile" && (
@@ -203,7 +225,10 @@ function Tab({ active, onClick, children }) {
 }
 
 function ImageUpload({ label, currentUrl, file, onChange }) {
-  const preview = file ? URL.createObjectURL(file) : currentUrl;
+  const preview = useMemo(() => file ? URL.createObjectURL(file) : currentUrl, [file, currentUrl]);
+  useEffect(() => () => {
+    if (file && preview) URL.revokeObjectURL(preview);
+  }, [file, preview]);
   return <label className="block">
     <span className="mb-1.5 block text-sm font-medium text-slate-700">{label}</span>
     <span className="flex cursor-pointer items-center gap-3 rounded-xl border border-dashed border-slate-300 p-3 hover:border-navy-400">

@@ -1,9 +1,10 @@
-import { useState } from "react";
-import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   AlertTriangle,
   Boxes,
   Building2,
+  ChevronDown,
   ClipboardList,
   LayoutDashboard,
   LogOut,
@@ -12,11 +13,14 @@ import {
   ShoppingCart,
   Truck,
   Users,
+  UserRound,
   Warehouse,
   X
 } from "lucide-react";
+import Swal from "sweetalert2";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useToast } from "../context/ToastContext.jsx";
+import BrandLogo from "./BrandLogo.jsx";
 
 const routeIcon = {
   overview: LayoutDashboard,
@@ -30,7 +34,8 @@ const routeIcon = {
   "supply-requests": Boxes,
   inventory: Warehouse,
   catalog: Package,
-  supplier: Truck
+  supplier: Truck,
+  profile: UserRound
 };
 
 const navigation = {
@@ -78,13 +83,39 @@ export default function AppShell() {
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const items = navigation[user?.role] || [];
   const active = items.find((item) => location.pathname === item.to) || items[0];
-  const title = active?.label || "Workspace";
+  const title = location.pathname === "/profile" ? "My Profile" : active?.label || "Workspace";
+
+  useEffect(() => {
+    setAccountMenuOpen(false);
+  }, [location.pathname]);
 
   const signOut = async () => {
+    setAccountMenuOpen(false);
+    const confirmation = await Swal.fire({
+      title: "Sign out?",
+      text: "Are you sure you want to sign out of Stockroom?",
+      icon: "warning",
+      showCancelButton: true,
+      reverseButtons: true,
+      focusCancel: true,
+      confirmButtonText: "Sign out",
+      cancelButtonText: "Stay signed in",
+      background: "#141d26",
+      color: "#e7edf3",
+      buttonsStyling: false,
+      customClass: {
+        popup: "stockroom-swal-popup",
+        confirmButton: "btn-primary",
+        cancelButton: "btn-secondary"
+      }
+    });
+    if (!confirmation.isConfirmed) return;
     try {
       await logout();
+      notify("You have signed out successfully.");
       navigate("/login", { replace: true });
     } catch (error) {
       notify(error?.response?.data?.message || "Could not sign out. Please try again.", "error");
@@ -94,13 +125,7 @@ export default function AppShell() {
   const sidebar = (
     <div className="flex h-full flex-col border-r border-white/5 bg-[#0c1218] text-white">
       <div className="flex h-[76px] items-center gap-3 border-b border-white/10 px-5">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#f47e25] text-[#17130f]">
-          <Boxes className="h-5 w-5" strokeWidth={2.5} />
-        </div>
-        <div>
-          <p className="text-sm font-extrabold tracking-[0.13em]">STOCKROOM</p>
-          <p className="mt-0.5 text-[10px] font-medium uppercase tracking-[0.12em] text-slate-400">Warehouse operations</p>
-        </div>
+      <BrandLogo descriptor />
         <button className="ml-auto rounded-lg p-2 text-slate-300 hover:bg-white/10 lg:hidden" onClick={() => setMobileOpen(false)} aria-label="Close menu">
           <X className="h-5 w-5" />
         </button>
@@ -129,7 +154,7 @@ export default function AppShell() {
       </div>
 
       <div className="mt-auto border-t border-white/10 p-3">
-        <div className="flex items-center gap-3 rounded-xl border border-white/5 bg-white/[0.04] p-3">
+        <Link to="/profile" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 rounded-xl border border-white/5 bg-white/[0.04] p-3 transition hover:border-[#f47e25]/30 hover:bg-white/[0.07]" aria-label="Open my profile">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#f47e25] text-xs font-bold uppercase text-[#17130f]">
             {(user?.username || "U").slice(0, 2)}
           </div>
@@ -137,10 +162,8 @@ export default function AppShell() {
             <p className="truncate text-sm font-semibold">{user?.username}</p>
             <p className="truncate text-[11px] text-slate-400">{roleName[user?.role]}</p>
           </div>
-          <button onClick={signOut} aria-label="Sign out" title="Sign out" className="rounded-lg p-2 text-slate-300 hover:bg-white/10 hover:text-white">
-            <LogOut className="h-4 w-4" />
-          </button>
-        </div>
+          <UserRound className="h-4 w-4 shrink-0 text-slate-400" />
+        </Link>
       </div>
     </div>
   );
@@ -166,18 +189,38 @@ export default function AppShell() {
               <h1 className="text-base font-bold text-slate-900">{title}</h1>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="hidden text-right sm:block">
-              <p className="text-sm font-semibold text-slate-800">{user?.username}</p>
-              <p className="text-xs text-slate-500">{roleName[user?.role]}</p>
-            </div>
-            <div className="flex h-10 w-10 items-center justify-center rounded-full border border-[#f47e25]/30 bg-[#f47e25]/10 text-sm font-bold uppercase text-[#ff994e]">
-              {(user?.username || "U").slice(0, 2)}
-            </div>
-            <button onClick={signOut} className="hidden items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 sm:flex">
-              <LogOut className="h-4 w-4" />
-              Sign out
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setAccountMenuOpen((open) => !open)}
+              className="flex items-center gap-2 rounded-xl p-1.5 text-left hover:bg-slate-100"
+              aria-label="Open account menu"
+              aria-haspopup="menu"
+              aria-expanded={accountMenuOpen}
+            >
+              <span className="hidden text-right sm:block">
+                <span className="block text-sm font-semibold text-slate-800">{user?.username}</span>
+                <span className="block text-xs text-slate-500">{roleName[user?.role]}</span>
+              </span>
+              <span className="flex h-10 w-10 items-center justify-center rounded-full border border-[#f47e25]/30 bg-[#f47e25]/10 text-sm font-bold uppercase text-[#ff994e]">
+                {(user?.username || "U").slice(0, 2)}
+              </span>
+              <ChevronDown className={`h-4 w-4 text-slate-500 transition ${accountMenuOpen ? "rotate-180" : ""}`} />
             </button>
+            {accountMenuOpen && (
+              <div role="menu" className="absolute right-0 top-[calc(100%+0.55rem)] z-50 w-56 rounded-xl border border-slate-200 bg-white p-2 shadow-xl">
+                <div className="border-b border-slate-100 px-3 py-2">
+                  <p className="truncate text-sm font-semibold text-slate-800">{user?.username}</p>
+                  <p className="truncate text-xs text-slate-500">{user?.email}</p>
+                </div>
+                <Link to="/profile" role="menuitem" className="mt-1 flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-100">
+                  <UserRound className="h-4 w-4" /> My Profile
+                </Link>
+                <button type="button" role="menuitem" onClick={signOut} className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-50">
+                  <LogOut className="h-4 w-4" /> Sign out
+                </button>
+              </div>
+            )}
           </div>
         </header>
         <main className="mx-auto max-w-[1680px] px-4 py-5 sm:px-7 sm:py-7">

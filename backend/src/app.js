@@ -15,14 +15,18 @@ import { errorHandler, notFound } from "./middlewares/error.middleware.js";
 import ApiError from "./utils/ApiError.js";
 
 const app = express();
-const allowedOrigins = (process.env.CORS_ORIGINS || "http://localhost:5173")
+const configuredOrigins = (process.env.CORS_ORIGINS || "http://localhost:5173")
   .split(",")
   .map((origin) => origin.trim())
   .filter(Boolean);
+const developmentOrigins = process.env.NODE_ENV === "production"
+  ? []
+  : ["http://localhost:5173", "http://127.0.0.1:5173"];
+const allowedOrigins = new Set([...configuredOrigins, ...developmentOrigins]);
 
 app.use(cors({
   origin(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    if (!origin || allowedOrigins.has(origin)) return callback(null, true);
     return callback(new ApiError(403, "Origin is not allowed by CORS."));
   },
   credentials: true
