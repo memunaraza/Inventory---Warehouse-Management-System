@@ -123,21 +123,55 @@ export function PublicHomePage() {
         <img src={imageUrl} alt="Warehouse storage racks and active logistics floor" />
         <div className="public-hero-shade absolute inset-0" />
         <div className="relative mx-auto w-full max-w-[1360px] px-4 py-16 sm:px-7 sm:py-20">
-          <div className="max-w-3xl">
-            <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#f47e25]/35 bg-[#0b1117]/50 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#ff9a51]">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#f47e25]" />
-              Inventory · Warehousing · Fulfillment
-            </p>
-            <h1 className="text-4xl font-extrabold leading-[1.06] tracking-tight text-white sm:text-6xl lg:text-7xl">Warehouse operations,<br className="hidden sm:block" /> under control.</h1>
-            <p className="mt-6 max-w-2xl text-base leading-7 text-slate-200 sm:text-lg sm:leading-8">Keep stock visible by location, coordinate your team, and move orders from request to fulfillment in one connected workspace.</p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link to="/register" className="btn-primary px-5 py-3">Get started <ArrowRight className="h-4 w-4" /></Link>
-              <Link to="/features" className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-white/25 bg-black/20 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-black/35">Explore the platform</Link>
+          <div className="grid items-center gap-10 lg:grid-cols-[1.08fr_0.92fr]">
+            <div className="max-w-3xl">
+              <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#f47e25]/35 bg-[#0b1117]/60 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#ff9a51] backdrop-blur">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#f47e25] shadow-[0_0_12px_rgba(244,126,37,0.9)]" />
+                Inventory · Warehousing · Fulfillment
+              </p>
+              <h1 className="text-4xl font-extrabold leading-[1.04] tracking-tight text-white sm:text-6xl lg:text-[4.7rem]">
+                Warehouse operations,<br className="hidden sm:block" /> <span className="text-[#ff9345]">under control.</span>
+              </h1>
+              <p className="mt-6 max-w-2xl text-base leading-7 text-slate-200 sm:text-lg sm:leading-8">Keep stock visible by location, coordinate your team, and move orders from request to fulfillment in one connected workspace.</p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Link to="/register" className="btn-primary px-5 py-3">Get started <ArrowRight className="h-4 w-4" /></Link>
+                <Link to="/features" className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-white/25 bg-black/20 px-4 py-2.5 text-sm font-bold text-white backdrop-blur transition hover:border-white/40 hover:bg-black/35">Explore the platform <ArrowUpRight className="h-4 w-4" /></Link>
+              </div>
+              <div className="mt-9 flex flex-wrap gap-x-6 gap-y-3 text-xs font-medium text-slate-200 sm:text-sm">
+                <span className="inline-flex items-center gap-2"><Check className="h-4 w-4 text-[#ff9345]" /> Role-based workspaces</span>
+                <span className="inline-flex items-center gap-2"><Check className="h-4 w-4 text-[#ff9345]" /> Warehouse-level stock</span>
+                <span className="inline-flex items-center gap-2"><Check className="h-4 w-4 text-[#ff9345]" /> Movement history</span>
+              </div>
             </div>
-            <div className="mt-9 flex flex-wrap gap-x-6 gap-y-3 text-xs font-medium text-slate-200 sm:text-sm">
-              <span className="inline-flex items-center gap-2"><Check className="h-4 w-4 text-[#ff9345]" /> Role-based workspaces</span>
-              <span className="inline-flex items-center gap-2"><Check className="h-4 w-4 text-[#ff9345]" /> Warehouse-level stock</span>
-              <span className="inline-flex items-center gap-2"><Check className="h-4 w-4 text-[#ff9345]" /> Movement history</span>
+
+            <div className="hero-dashboard relative hidden lg:block" aria-label="Operations overview preview">
+              <div className="hero-dashboard-glow" />
+              <div className="relative rounded-2xl border border-white/15 bg-[#101820]/92 p-4 shadow-[0_30px_80px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+                <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                  <div>
+                    <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-slate-500">Operations overview</p>
+                    <p className="mt-1 text-sm font-bold text-white">Today’s warehouse</p>
+                  </div>
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-2.5 py-1 text-[10px] font-bold text-emerald-300">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Live
+                  </span>
+                </div>
+                <div className="grid grid-cols-3 gap-2 py-3">
+                  <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3"><Package className="h-4 w-4 text-[#ff9345]" /><p className="mt-3 text-xl font-extrabold text-white">1,284</p><p className="mt-1 text-[9px] font-bold uppercase tracking-wider text-slate-500">In stock</p></div>
+                  <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3"><Truck className="h-4 w-4 text-[#75b9ff]" /><p className="mt-3 text-xl font-extrabold text-white">38</p><p className="mt-1 text-[9px] font-bold uppercase tracking-wider text-slate-500">To dispatch</p></div>
+                  <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3"><Boxes className="h-4 w-4 text-emerald-400" /><p className="mt-3 text-xl font-extrabold text-white">96%</p><p className="mt-1 text-[9px] font-bold uppercase tracking-wider text-slate-500">Capacity</p></div>
+                </div>
+                <div className="rounded-xl border border-white/10 bg-[#0b1117]/70 p-3">
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs font-bold text-white">Recent activity</p>
+                    <p className="text-[9px] font-bold uppercase tracking-wider text-[#ff9345]">View all</p>
+                  </div>
+                  <div className="mt-3 space-y-2">
+                    <div className="flex items-center gap-3 rounded-lg bg-white/[0.03] px-3 py-2.5"><span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-400/10"><Truck className="h-4 w-4 text-emerald-400" /></span><div className="min-w-0 flex-1"><p className="truncate text-xs font-bold text-slate-200">Dispatch completed</p><p className="mt-0.5 text-[10px] text-slate-500">Order #1048 · 12 items</p></div><span className="text-[10px] text-slate-500">2m</span></div>
+                    <div className="flex items-center gap-3 rounded-lg bg-white/[0.03] px-3 py-2.5"><span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#f47e25]/10"><Package className="h-4 w-4 text-[#ff9345]" /></span><div className="min-w-0 flex-1"><p className="truncate text-xs font-bold text-slate-200">Stock received</p><p className="mt-0.5 text-[10px] text-slate-500">Central Warehouse · 84 units</p></div><span className="text-[10px] text-slate-500">8m</span></div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

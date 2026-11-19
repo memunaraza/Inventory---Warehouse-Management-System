@@ -241,14 +241,53 @@ button:disabled {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 54%;
+  object-position: center 58%;
 }
 
 .public-hero-shade {
   z-index: -1;
   background:
-    linear-gradient(90deg, rgba(7, 12, 17, 0.97) 0%, rgba(7, 12, 17, 0.86) 42%, rgba(7, 12, 17, 0.34) 100%),
-    linear-gradient(0deg, rgba(7, 12, 17, 0.35), transparent 55%);
+    linear-gradient(90deg, rgba(7, 12, 17, 0.98) 0%, rgba(7, 12, 17, 0.91) 48%, rgba(7, 12, 17, 0.38) 100%),
+    linear-gradient(0deg, rgba(7, 12, 17, 0.58), transparent 55%);
+}
+
+.public-hero::after {
+  position: absolute;
+  z-index: -1;
+  right: -12%;
+  bottom: -55%;
+  width: 55%;
+  height: 100%;
+  border-radius: 999px;
+  background: rgba(244, 126, 37, 0.14);
+  filter: blur(90px);
+  content: "";
+  pointer-events: none;
+}
+
+.hero-dashboard {
+  transform: perspective(1200px) rotateY(-4deg) rotateX(1deg);
+  animation: hero-dashboard-in 700ms ease-out both;
+}
+
+.hero-dashboard-glow {
+  position: absolute;
+  inset: 12% -8% -12% 20%;
+  border-radius: 999px;
+  background: rgba(244, 126, 37, 0.16);
+  filter: blur(42px);
+  pointer-events: none;
+}
+
+@keyframes hero-dashboard-in {
+  from {
+    opacity: 0;
+    transform: perspective(1200px) translateY(14px) rotateY(-4deg) rotateX(1deg);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(1200px) translateY(0) rotateY(-4deg) rotateX(1deg);
+  }
 }
 
 .public-feature-card {

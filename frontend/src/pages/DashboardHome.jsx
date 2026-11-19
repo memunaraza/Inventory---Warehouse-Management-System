@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   AlertTriangle,
-  ArrowDownToLine,
   ArrowUpRight,
   Boxes,
   Building2,
@@ -16,7 +15,7 @@ import { Link } from "react-router-dom";
 import api, { getApiData, getApiError } from "../api/client.js";
 import { useAuth } from "../context/AuthContext.jsx";
 import { EmptyState, ErrorState, PageLoading, StatusBadge } from "../components/ui.jsx";
-import WarehouseHero from "../components/WarehouseHero.jsx";
+import WarehouseHero, { warehouseImage } from "../components/WarehouseHero.jsx";
 
 const iconMap = {
   users: Users,
@@ -205,21 +204,24 @@ function AdminOverview({ data }) {
   const pendingRequests = data.requests.filter((item) => item.status === "Pending");
   return (
     <>
-      <div className="grid gap-5 xl:grid-cols-[1.25fr_0.85fr]">
-        <WarehouseActivityPanel warehouses={data.warehouses} stock={data.stock} />
+      <div className="grid gap-4 xl:grid-cols-[1.3fr_0.9fr]">
+        <InventoryOverviewPanel warehouses={data.warehouses} stock={data.stock} />
+        <WarehouseStatusPanel warehouses={data.warehouses} stock={data.stock} />
+      </div>
+      <div className="grid gap-4 xl:grid-cols-2">
+        <TransactionsPanel transactions={data.transactions} />
         <InventoryAttention alerts={data.alerts} />
       </div>
-      <div className="grid gap-5 xl:grid-cols-2">
-        <TransactionsPanel transactions={data.transactions} />
+      <div className="grid gap-4 xl:grid-cols-2">
+        <section className="panel overflow-hidden">
+          <PanelTitle title="Recent orders" subtitle="Latest customer orders across the operation" icon={ShoppingCart} actionTo="/orders" actionLabel="View all" />
+          <OrdersTable orders={data.orders.slice(0, 5)} admin />
+        </section>
         <section className="panel overflow-hidden">
           <PanelTitle title="Supplier requests" subtitle={`${pendingRequests.length} awaiting review`} icon={Truck} actionTo="/supply-requests" actionLabel="Review" />
           <RequestList requests={data.requests.slice(0, 5)} />
         </section>
       </div>
-      <section className="panel overflow-hidden">
-        <PanelTitle title="Recent sales orders" subtitle="Latest customer orders across the operation" icon={ShoppingCart} actionTo="/orders" actionLabel="View all" />
-        <OrdersTable orders={data.orders.slice(0, 6)} admin />
-      </section>
     </>
   );
 }
@@ -227,12 +229,15 @@ function AdminOverview({ data }) {
 function ManagerOverview({ data }) {
   return (
     <>
-      <div className="grid gap-5 xl:grid-cols-[1.25fr_0.85fr]">
-        <WarehouseActivityPanel warehouses={data.warehouses} stock={data.stock} />
+      <div className="grid gap-4 xl:grid-cols-[1.3fr_0.9fr]">
+        <InventoryOverviewPanel warehouses={data.warehouses} stock={data.stock} />
+        <WarehouseStatusPanel warehouses={data.warehouses} stock={data.stock} />
+      </div>
+      <div className="grid gap-4 xl:grid-cols-2">
+        <TransactionsPanel transactions={data.transactions} />
         <InventoryAttention alerts={data.alerts} />
       </div>
-      <div className="grid gap-5 xl:grid-cols-2">
-        <TransactionsPanel transactions={data.transactions} />
+      <div className="grid gap-4 xl:grid-cols-2">
         <section className="panel overflow-hidden">
           <PanelTitle title="Orders to fulfill" subtitle={`${countStatus(data.orders, "Pending")} pending orders`} icon={ShoppingCart} actionTo="/orders" actionLabel="Open orders" />
           <OrdersTable orders={data.orders.slice(0, 5)} />
@@ -299,7 +304,7 @@ function SalesOverview({ data }) {
   );
 }
 
-function WarehouseActivityPanel({ warehouses, stock }) {
+function InventoryOverviewPanel({ warehouses, stock }) {
   const locations = warehouses.map((warehouse) => {
     const records = stock.filter((item) => item.warehouse?._id === warehouse._id);
     return {
@@ -309,23 +314,88 @@ function WarehouseActivityPanel({ warehouses, stock }) {
     };
   });
   const maxUnits = Math.max(...locations.map((item) => item.units), 1);
+  const chartHeight = 112;
   return (
-    <section className="panel p-5 sm:p-6">
-      <PanelTitle title="Inventory overview" subtitle="Live on-hand volume by warehouse" icon={Boxes} actionTo="/warehouses" actionLabel="Locations" />
+    <section className="panel overflow-hidden">
+      <PanelTitle title="Inventory overview" subtitle="Current on-hand units by warehouse" icon={Boxes} actionTo="/warehouses" actionLabel="Locations" />
       {!locations.length ? <EmptyState title="No warehouse activity" description="Warehouse stock distribution will appear here when locations are configured." /> : (
-        <div className="mt-5 space-y-5">
-          {locations.slice(0, 6).map(({ warehouse, units, products }) => (
-            <div key={warehouse._id}>
-              <div className="mb-2 flex items-center justify-between gap-3">
-                <div className="min-w-0"><p className="truncate text-sm font-semibold text-slate-900">{warehouse.name}</p><p className="mt-0.5 text-[11px] text-slate-500">{warehouse.code} · {products} product lines</p></div>
-                <span className="shrink-0 text-sm font-bold text-slate-800">{formatNumber(units)} <span className="text-xs font-medium text-slate-500">units</span></span>
-              </div>
-              <div className="h-2 overflow-hidden rounded-full bg-slate-100"><div className="h-full rounded-full bg-[#f47e25]" style={{ width: `${units ? Math.max(4, (units / maxUnits) * 100) : 0}%` }} /></div>
+        <div className="px-5 pb-4 pt-3 sm:px-6">
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+            <p className="text-[11px] font-medium text-slate-500">Units on hand by location · live inventory</p>
+            <span className="flex items-center gap-2 text-[10px] font-semibold text-slate-400"><span className="h-2 w-2 rounded-full bg-[#f47e25]" /> Available units</span>
+          </div>
+          <div className="grid grid-cols-[32px_1fr] gap-2">
+            <div className="flex h-[164px] flex-col justify-between pb-5 text-right text-[9px] text-slate-500">
+              <span>{formatNumber(maxUnits)}</span>
+              <span>{formatNumber(Math.round(maxUnits / 2))}</span>
+              <span>0</span>
             </div>
-          ))}
-          <p className="border-t border-slate-100 pt-4 text-[11px] leading-5 text-slate-500">
-            Bars compare stock volume between locations. Storage capacity limits are not configured in the current warehouse records.
-          </p>
+            <div className="relative flex h-[164px] items-end justify-around gap-2 border-b border-l border-slate-100 px-2">
+              <div className="pointer-events-none absolute inset-x-0 top-0 border-t border-dashed border-slate-100" />
+              <div className="pointer-events-none absolute inset-x-0 top-1/2 border-t border-dashed border-slate-100" />
+              {locations.slice(0, 8).map(({ warehouse, units, products }) => {
+                const height = units ? Math.max(5, (units / maxUnits) * chartHeight) : 2;
+                return (
+                  <div key={warehouse._id} className="group relative flex h-full min-w-0 flex-1 flex-col items-center justify-end">
+                    <span className="mb-1 text-[9px] font-semibold text-slate-400">{formatNumber(units)}</span>
+                    <div className="w-full max-w-10 rounded-t-md bg-[#f47e25] transition-colors group-hover:bg-[#ff974d]" style={{ height: `${height}px` }} title={`${warehouse.name}: ${formatNumber(units)} units across ${products} product lines`} />
+                    <span className="mt-2 w-full truncate text-center text-[9px] text-slate-500">{warehouse.code}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          <p className="mt-3 text-[10px] leading-4 text-slate-500">Bars compare current stock volume between warehouses; this is not a capacity percentage.</p>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function WarehouseStatusPanel({ warehouses, stock }) {
+  const locations = warehouses.map((warehouse) => {
+    const records = stock.filter((item) => item.warehouse?._id === warehouse._id);
+    return {
+      warehouse,
+      units: records.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0),
+      products: new Set(records.map((item) => item.product?._id).filter(Boolean)).size
+    };
+  });
+  const totalUnits = locations.reduce((sum, item) => sum + item.units, 0);
+  const leadingLocation = [...locations].sort((a, b) => b.units - a.units)[0];
+  const leadingShare = totalUnits && leadingLocation ? Math.round((leadingLocation.units / totalUnits) * 100) : 0;
+  return (
+    <section className="panel overflow-hidden">
+      <PanelTitle title="Warehouse status" subtitle="Live stock distribution by location" icon={Warehouse} actionTo="/warehouses" actionLabel="View all" />
+      {!locations.length ? <EmptyState title="No warehouses available" description="Warehouse status will appear here when locations are configured." /> : (
+        <div className="p-5 sm:p-6">
+          <div className="flex items-center gap-4 rounded-xl border border-slate-100 bg-slate-50/70 p-3">
+            <div className="relative h-[72px] w-[72px] shrink-0 rounded-full p-[7px]" style={{ background: `conic-gradient(#f47e25 ${leadingShare}%, #293541 ${leadingShare}% 100%)` }}>
+              <div className="flex h-full w-full flex-col items-center justify-center rounded-full bg-[#141d26]">
+                <span className="text-base font-extrabold text-white">{leadingShare}%</span>
+              </div>
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-bold text-slate-900">{leadingLocation?.warehouse.name || "No stock recorded"}</p>
+              <p className="mt-1 text-[11px] text-slate-500">Share of current stock across {locations.length} location{locations.length === 1 ? "" : "s"}</p>
+              <p className="mt-1 text-[10px] text-slate-500">{formatNumber(totalUnits)} total units on hand</p>
+            </div>
+            <img src={warehouseImage} alt="" className="hidden h-[66px] w-[84px] rounded-lg object-cover sm:block" loading="lazy" />
+          </div>
+
+          <div className="mt-4 space-y-3">
+            {locations.slice(0, 4).map(({ warehouse, units, products }) => {
+              const share = totalUnits ? Math.round((units / totalUnits) * 100) : 0;
+              return <div key={warehouse._id} className="flex items-center gap-3">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#f47e25]/10 text-[#ff9345]"><Building2 className="h-4 w-4" /></span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between gap-2"><p className="truncate text-xs font-semibold text-slate-800">{warehouse.name}</p><span className="shrink-0 text-[10px] text-slate-400">{share}%</span></div>
+                  <p className="mt-0.5 text-[10px] text-slate-500">{formatNumber(units)} units · {products} product lines</p>
+                </div>
+              </div>;
+            })}
+          </div>
+          <p className="mt-4 border-t border-slate-100 pt-3 text-[10px] leading-4 text-slate-500">Share reflects live stock distribution. Capacity limits are not available in the current warehouse records.</p>
         </div>
       )}
     </section>
@@ -336,11 +406,19 @@ function InventoryAttention({ alerts }) {
   return (
     <section className="panel overflow-hidden">
       <PanelTitle title="Low-stock alerts" subtitle="Products at or below reorder point" icon={AlertTriangle} actionTo="/alerts" actionLabel="View all" />
-      <div className="divide-y divide-slate-100">
-        {alerts.slice(0, 5).map((alert) => <div key={`${alert.product?._id}-${alert.warehouse?._id}`} className="flex items-center justify-between gap-3 px-5 py-3.5">
-          <div className="min-w-0"><p className="truncate text-sm font-semibold text-slate-900">{alert.product?.name || "Product"}</p><p className="mt-1 truncate text-xs text-slate-500">{alert.warehouse?.name || "Warehouse"} · {alert.product?.sku || "—"}</p></div>
-          <span className="shrink-0 rounded-lg border border-amber-500/20 bg-amber-500/10 px-2.5 py-1 text-xs font-bold text-amber-300">{formatNumber(alert.quantity)} left</span>
-        </div>)}
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[440px]">
+          <thead><tr><th className="table-head px-4 py-3">Product</th><th className="table-head px-3 py-3">Current</th><th className="table-head px-3 py-3">Minimum</th><th className="table-head px-4 py-3">Status</th></tr></thead>
+          <tbody>{alerts.slice(0, 5).map((alert) => {
+            const critical = Number(alert.quantity) === 0;
+            return <tr key={`${alert.product?._id}-${alert.warehouse?._id}`}>
+              <td className="table-cell px-4"><p className="max-w-40 truncate font-semibold text-slate-900">{alert.product?.name || "Product"}</p><p className="mt-1 max-w-40 truncate text-[10px] text-slate-500">{alert.product?.sku || "—"} · {alert.warehouse?.name || "Warehouse"}</p></td>
+              <td className="table-cell px-3 font-bold text-amber-300">{formatNumber(alert.quantity)}</td>
+              <td className="table-cell px-3">{formatNumber(alert.lowStockLimit)}</td>
+              <td className="table-cell px-4"><span className={`rounded-full px-2 py-1 text-[9px] font-extrabold uppercase ${critical ? "bg-red-500/15 text-red-300" : "bg-amber-500/15 text-amber-300"}`}>{critical ? "Critical" : "Low"}</span></td>
+            </tr>;
+          })}</tbody>
+        </table>
         {!alerts.length && <EmptyState title="No active low-stock alerts" description="No products are currently at or below their configured reorder limits." />}
       </div>
     </section>
@@ -351,18 +429,20 @@ function TransactionsPanel({ transactions }) {
   return (
     <section className="panel overflow-hidden">
       <PanelTitle title="Recent transactions" subtitle="Latest recorded stock movements" icon={ClipboardList} actionTo="/transactions" actionLabel="Audit trail" />
-      <div className="divide-y divide-slate-100">
-        {transactions.slice(0, 5).map((transaction) => {
-          const inbound = transaction.type === "in";
-          const MovementIcon = inbound ? ArrowDownToLine : ArrowUpRight;
-          return <div key={transaction._id} className="flex items-center justify-between gap-3 px-5 py-3.5">
-            <div className="flex min-w-0 items-center gap-3">
-              <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${inbound ? "bg-emerald-500/10 text-emerald-300" : "bg-blue-500/10 text-blue-300"}`}><MovementIcon className="h-4 w-4" /></span>
-              <div className="min-w-0"><p className="truncate text-sm font-semibold text-slate-900">{transaction.product?.name || "Product"}</p><p className="mt-1 truncate text-xs text-slate-500">{transaction.warehouse?.name || "Warehouse"} · {new Date(transaction.createdAt).toLocaleDateString()}</p></div>
-            </div>
-            <span className={`shrink-0 text-sm font-bold ${inbound ? "text-emerald-300" : "text-blue-300"}`}>{inbound ? "+" : "−"}{formatNumber(transaction.quantity)}</span>
-          </div>;
-        })}
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[520px]">
+          <thead><tr><th className="table-head px-4 py-3">Type</th><th className="table-head px-3 py-3">Product</th><th className="table-head px-3 py-3">Qty</th><th className="table-head px-3 py-3">Warehouse</th><th className="table-head px-4 py-3">Date</th></tr></thead>
+          <tbody>{transactions.slice(0, 5).map((transaction) => {
+            const inbound = transaction.type === "in";
+            return <tr key={transaction._id}>
+              <td className="table-cell px-4"><span className={`rounded-md px-2 py-1 text-[9px] font-extrabold uppercase ${inbound ? "bg-emerald-500/15 text-emerald-300" : "bg-amber-500/15 text-amber-300"}`}>{inbound ? "In" : "Out"}</span></td>
+              <td className="table-cell px-3"><span className="block max-w-32 truncate font-semibold text-slate-900">{transaction.product?.name || "Product"}</span></td>
+              <td className={`table-cell px-3 font-bold ${inbound ? "text-emerald-300" : "text-amber-300"}`}>{inbound ? "+" : "−"}{formatNumber(transaction.quantity)}</td>
+              <td className="table-cell px-3"><span className="block max-w-32 truncate">{transaction.warehouse?.name || "Warehouse"}</span></td>
+              <td className="table-cell px-4 text-[10px]">{new Date(transaction.createdAt).toLocaleString()}</td>
+            </tr>;
+          })}</tbody>
+        </table>
         {!transactions.length && <EmptyState title="No movements recorded" description="Stock receipts, dispatches, and fulfillment activity will appear here." />}
       </div>
     </section>
